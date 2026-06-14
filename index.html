@@ -64,6 +64,28 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 [contenteditable]:hover{background:rgba(255,255,255,.04);border-radius:4px}
 [contenteditable]:focus{background:rgba(255,255,255,.07);border-radius:4px;outline:none;box-shadow:0 0 0 1px rgba(91,158,240,.4)}
 @media(max-width:480px){.hero h1{font-size:20px}.mg{grid-template-columns:1fr 1fr}}
+
+.tabs-nav{display:flex;gap:0;margin:0 20px 16px;max-width:740px;margin-left:auto;margin-right:auto;background:var(--bg2);border-radius:12px;padding:4px;border:1px solid var(--border)}
+.tab-btn{flex:1;padding:8px;border:none;background:none;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;transition:all .15s;font-family:'Inter',sans-serif}
+.tab-btn.active{background:var(--bg3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tab-content{display:none;max-width:740px;margin:0 auto;padding:0 20px}
+.tab-content.active{display:block}
+.checklist-section{margin-bottom:20px}
+.checklist-section h3{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)44;cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;margin-top:2px}
+.check-label{font-size:13px;color:var(--text);line-height:1.4;flex:1}
+.check-label.done{text-decoration:line-through;color:var(--text3)}
+.check-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.progress-bar{background:var(--bg3);border-radius:20px;height:6px;margin-bottom:16px;overflow:hidden;border:1px solid var(--border)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:20px;transition:width .4s}
+.progress-label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.note-box{margin-top:6px;width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text2);font-size:12px;font-family:'Inter',sans-serif;resize:none;min-height:32px;line-height:1.5;transition:border-color .15s;overflow:hidden}
+.note-box:focus{outline:none;border-color:var(--blue);color:var(--text)}
+.note-box::placeholder{color:var(--text3)}
+.note-toggle{font-size:11px;color:var(--text3);cursor:pointer;margin-top:4px;display:inline-flex;align-items:center;gap:4px;user-select:none}
+.note-toggle:hover{color:var(--text2)}
 </style>
 </head>
 <body>
@@ -77,7 +99,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <span class="chip" style="border-color:#9B8EF0;color:#9B8EF0;background:#1E1B35">🎆 20 Jun: Kembang Api Dongshi 20:00</span>
   </div>
 </div>
-<div class="days" id="days"></div>
+<div class="tabs-nav">
+  <button class="tab-btn active" onclick="switchTab('iti')">🗓 Itinerary</button>
+  <button class="tab-btn" onclick="switchTab('checklist')">✅ Checklist</button>
+</div>
+
+<div class="tab-content active" id="tab-iti">
+  <div class="days" id="days"></div>
+</div>
+
+<div class="tab-content" id="tab-checklist">
+  <div id="checklist-container"></div>
+</div>
 <div class="toast" id="toast">Tersimpan ✓</div>
 <div class="edit-bar">
   <span id="est">Mode lihat</span>
@@ -428,12 +461,172 @@ function toggleEdit(){
 }
 
 function saveData(){
+  // Save checklist state
+  const checks={};
+  document.querySelectorAll('.check-item input').forEach(cb=>{
+    checks[cb.id]=cb.checked;
+  });
+  // Save notes
+  const notes={};
+  document.querySelectorAll('.note-box').forEach(nb=>{
+    if(nb.value) notes[nb.dataset.key]=nb.value;
+  });
+  localStorage.setItem('tw2026_checks', JSON.stringify(checks));
+  localStorage.setItem('tw2026_notes', JSON.stringify(notes));
   const t=document.getElementById('toast');
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2000);
 }
 
+function loadSaved(){
+  try{
+    const checks=JSON.parse(localStorage.getItem('tw2026_checks')||'{}');
+    Object.entries(checks).forEach(([id,val])=>{
+      const el=document.getElementById(id);
+      if(el){el.checked=val; updateCheckStyle(el);}
+    });
+    const notes=JSON.parse(localStorage.getItem('tw2026_notes')||'{}');
+    Object.entries(notes).forEach(([key,val])=>{
+      const el=document.querySelector(`.note-box[data-key="${key}"]`);
+      if(el){el.value=val; autoResize(el);}
+    });
+    updateProgress();
+  }catch(e){}
+}
+
+function updateCheckStyle(cb){
+  const label=cb.closest('.check-item').querySelector('.check-label');
+  if(cb.checked) label.classList.add('done');
+  else label.classList.remove('done');
+  updateProgress();
+}
+
+function updateProgress(){
+  const all=document.querySelectorAll('.check-item input');
+  const done=document.querySelectorAll('.check-item input:checked');
+  const pct=all.length?Math.round(done.length/all.length*100):0;
+  const fill=document.getElementById('prog-fill');
+  const lbl=document.getElementById('prog-lbl');
+  if(fill) fill.style.width=pct+'%';
+  if(lbl) lbl.textContent=`${done.length} dari ${all.length} selesai (${pct}%)`;
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=el.scrollHeight+'px';
+}
+
+function toggleNote(key){
+  const nb=document.querySelector(`.note-box[data-key="${key}"]`);
+  if(nb){
+    nb.style.display=nb.style.display==='none'?'block':'none';
+    if(nb.style.display==='block') nb.focus();
+  }
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function renderChecklist(){
+  const sections=[
+    {title:'✈️ Tiket & Dokumen',items:[
+      {id:'c1',label:'Paspor valid (min. Des 2026)',sub:'Cek tanggal expired semua anggota termasuk baby'},
+      {id:'c2',label:'Visa Taiwan — sudah keluar ✅',sub:''},
+      {id:'c3',label:'Tiket pesawat CGK→TPE (China Airlines 19 Jun)',sub:'Booking No. 1367841300728909'},
+      {id:'c4',label:'Tiket pesawat TPE→CGK (EVA Air 28 Jun)',sub:'Booking No. 1367841269879068'},
+      {id:'c5',label:'Print/screenshot semua e-ticket',sub:''},
+      {id:'c6',label:'International Driving Permit (SIM Internasional)',sub:'Wajib untuk self-drive di Taiwan — urus di Polres/Samsat'},
+    ]},
+    {title:'🏨 Akomodasi',items:[
+      {id:'h1',label:'心月湖畔雅房包棟民宿 — SML (19-20 Jun)',sub:'Sudah booking ✅'},
+      {id:'h2',label:'Tsun-Huang Hotel Chiayi (20-21 Jun)',sub:'Sudah booking ✅ · No. 1367841300728909'},
+      {id:'h3',label:'Penginapan Taipei Ximending (21-27 Jun)',sub:'Belum booking ⚠️ — cari Airbnb/Agoda 9 orang + lift'},
+    ]},
+    {title:'🚗 Transportasi',items:[
+      {id:'t1',label:'Konfirmasi mobil tersedia & siap di TPE',sub:'Cek kapasitas: 9 orang + koper banyak'},
+      {id:'t2',label:'ETC card untuk bayar tol otomatis',sub:'Bisa sewa/beli di bandara atau toko konveniens'},
+      {id:'t3',label:'Google Maps offline Taiwan downloaded',sub:''},
+      {id:'t4',label:'Sewa private van North Coast D5',sub:'KKday/Klook: "North Coast private tour 9 pax"'},
+    ]},
+    {title:'🎟️ Booking Aktivitas',items:[
+      {id:'a1',label:'Reservasi 濠誠活海產 Lugang (D1 makan siang)',sub:'Tel: 04-776-6558 · Minta meja untuk 9 orang'},
+      {id:'a2',label:'Tiket Taipei 101 Observatory',sub:'Beli online di website resmi — dewasa NT$600'},
+      {id:'a3',label:'Tiket kereta sunrise Alishan (Zhushan)',sub:'Beli H-1 di loket stasiun Alishan · NT$100–150'},
+      {id:'a4',label:'Bus 6739 Alishan→SML (jika suatu saat balik)',sub:'Via Klook atau website resmi'},
+    ]},
+    {title:'🩺 Kesehatan & Keselamatan',items:[
+      {id:'m1',label:'Obat-obatan pribadi + obat bayi',sub:'Termasuk: antidiare, antinyeri, obat mabuk perjalanan'},
+      {id:'m2',label:'Sunscreen SPF 50+ (untuk North Coast & Yehliu)',sub:'Juni sangat terik di area outdoor'},
+      {id:'m3',label:'Asuransi perjalanan semua anggota',sub:'Pastikan cover aktivitas outdoor'},
+      {id:'m4',label:'Nomor darurat Taiwan: 110 (Polisi), 119 (Ambulans)',sub:'Save di HP semua orang dewasa'},
+    ]},
+    {title:'👶 Perlengkapan Baby & Lansia',items:[
+      {id:'b1',label:'Gendongan baby (untuk Jiufen — penuh tangga!)',sub:'Stroller tidak efektif di Jiufen'},
+      {id:'b2',label:'Jaket tebal untuk semua (Alishan 10–16°C)',sub:'Termasuk jaket + beanie untuk baby'},
+      {id:'b3',label:'Stroller lipat untuk tempat datar',sub:''},
+      {id:'b4',label:'Makanan/snack baby untuk perjalanan panjang',sub:'Terutama D1 dan D3 yang 3-4 jam di mobil'},
+    ]},
+    {title:'💴 Keuangan',items:[
+      {id:'f1',label:'Tukar NT$ (New Taiwan Dollar) sebelum berangkat',sub:'Rate di Jakarta biasanya lebih baik dari bandara Taiwan'},
+      {id:'f2',label:'Kartu kredit/debit yang bisa dipakai di Taiwan',sub:'Visa/Mastercard diterima luas'},
+      {id:'f3',label:'EasyCard untuk MRT & bus di Taipei',sub:'Beli di bandara TPE saat tiba · NT$500 (deposit NT$100)'},
+    ]},
+    {title:'🎁 Oleh-oleh (ceklis setelah beli)',items:[
+      {id:'o1',label:'Pineapple Cake (鳳梨酥) — SunnyHills atau Chia Te',sub:''},
+      {id:'o2',label:'Sun Moon Lake Black Tea (日月潭紅茶)',sub:'Beli di SML D1'},
+      {id:'o3',label:'Alishan Oolong Tea (阿里山烏龍茶)',sub:'Beli di Alishan D2'},
+      {id:'o4',label:'Dried Mango khas Taiwan',sub:''},
+      {id:'o5',label:'Nougat (牛軋糖)',sub:''},
+    ]},
+  ];
+
+  const cont=document.getElementById('checklist-container');
+  let html2='<div class="progress-label" id="prog-lbl">0 dari 0 selesai</div>';
+  html2+='<div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>';
+
+  sections.forEach(sec=>{
+    html2+=`<div class="checklist-section"><h3>${sec.title}</h3>`;
+    sec.items.forEach(item=>{
+      html2+=`<div class="check-item" onclick="event.stopPropagation()">
+        <input type="checkbox" id="${item.id}" onchange="updateCheckStyle(this);saveData()">
+        <div>
+          <div class="check-label" id="lbl-${item.id}">${item.label}</div>
+          ${item.sub?`<div class="check-sub">${item.sub}</div>`:''}
+        </div>
+      </div>`;
+    });
+    html2+='</div>';
+  });
+  cont.innerHTML=html2;
+}
+
 render();
+renderChecklist();
+loadSaved();
+
+// Add note boxes to timeline items after render
+document.querySelectorAll('.tr').forEach((tr,i)=>{
+  const key='note-'+i;
+  const toggle=document.createElement('div');
+  toggle.className='note-toggle';
+  toggle.innerHTML='📝 Tambah catatan';
+  toggle.onclick=(e)=>{e.stopPropagation();toggleNote(key)};
+
+  const nb=document.createElement('textarea');
+  nb.className='note-box';
+  nb.dataset.key=key;
+  nb.placeholder='Tulis catatan di sini...';
+  nb.style.display='none';
+  nb.oninput=()=>{autoResize(nb);saveData()};
+
+  tr.appendChild(toggle);
+  tr.appendChild(nb);
+});
+loadSaved();
 </script>
 </body>
 </html>
