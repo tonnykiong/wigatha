@@ -5,593 +5,424 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taiwan 2026 — 8 Adults + 1 Baby</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-  :root {
-    --bg: #0F1117;
-    --bg2: #181C26;
-    --bg3: #1E2330;
-    --border: #2A2F3E;
-    --text: #E8EAF0;
-    --text2: #9AA0B4;
-    --text3: #5C6278;
-    --teal: #2DD4A0;
-    --teal-dim: #193D2F;
-    --blue: #5B9EF0;
-    --blue-dim: #1A2740;
-    --amber: #F0B429;
-    --amber-dim: #2A200A;
-    --coral: #F06B5B;
-    --coral-dim: #2A1510;
-    --purple: #9B8EF0;
-    --purple-dim: #1E1B35;
-    --green: #6DBF67;
-    --green-dim: #182418;
-    --gray: #6B7280;
-    --gray-dim: #1A1D22;
-    --food: #F0B429;
-    --warn: #F06B5B;
-    --tip: #2DD4A0;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 60px;
-  }
-
-  /* Header */
-  .hero {
-    padding: 40px 20px 32px;
-    max-width: 720px;
-    margin: 0 auto;
-  }
-  .hero h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
-  .hero p { font-size: 14px; color: var(--text2); margin-top: 4px; }
-
-  .flight-chips {
-    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
-  }
-  .chip {
-    font-size: 12px; padding: 5px 12px;
-    border-radius: 20px; border: 1px solid var(--border);
-    color: var(--text2); background: var(--bg2);
-    white-space: nowrap;
-  }
-  .chip.blue { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
-  .chip.amber { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
-
-  /* Days container */
-  .days { max-width: 720px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; gap: 10px; }
-
-  .day-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  .day-head {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .day-head:hover { background: var(--bg3); }
-
-  .day-num {
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600; flex-shrink: 0;
-  }
-
-  .day-meta { flex: 1; }
-  .day-meta h3 { font-size: 15px; font-weight: 600; }
-  .day-meta p { font-size: 12px; color: var(--text2); margin-top: 2px; }
-  .day-chevron { font-size: 11px; color: var(--text3); transition: transform .2s; }
-  .day-card.open .day-chevron { transform: rotate(180deg); }
-
-  .day-body {
-    display: none;
-    border-top: 1px solid var(--border);
-    padding: 16px;
-  }
-  .day-card.open .day-body { display: block; }
-
-  /* Meals */
-  .meal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 8px; margin-bottom: 16px; }
-  .meal-box {
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px 12px;
-  }
-  .meal-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); margin-bottom: 3px; }
-  .meal-name { font-size: 13px; font-weight: 600; color: var(--text); }
-  .meal-desc { font-size: 11px; color: var(--text2); margin-top: 2px; line-height: 1.4; }
-
-  /* Editable */
-  [contenteditable] { outline: none; cursor: text; }
-  [contenteditable]:hover { background: rgba(255,255,255,.04); border-radius: 4px; }
-  [contenteditable]:focus { background: rgba(255,255,255,.06); border-radius: 4px; box-shadow: 0 0 0 1px rgba(93,158,240,.4); }
-
-  /* Section label */
-  .sec-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); margin-bottom: 10px; }
-
-  /* Timeline */
-  .tl { display: flex; flex-direction: column; }
-  .tl-item { display: flex; gap: 10px; }
-  .tl-l { display: flex; flex-direction: column; align-items: center; width: 44px; flex-shrink: 0; }
-  .tl-time { font-size: 10px; color: var(--text3); font-weight: 600; text-align: center; padding-top: 2px; line-height: 1.2; }
-  .tl-dot { width: 8px; height: 8px; border-radius: 50%; margin: 4px 0; flex-shrink: 0; }
-  .tl-line { flex: 1; width: 1px; background: var(--border); }
-  .tl-r { flex: 1; padding-bottom: 14px; }
-  .tl-place { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
-  .tl-desc { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
-  .tips { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
-  .tip { font-size: 11px; padding: 4px 10px; border-radius: 6px; background: var(--bg3); line-height: 1.4; }
-  .tip.food { border-left: 2px solid var(--food); color: var(--food); }
-  .tip.warn { border-left: 2px solid var(--warn); color: #f09080; }
-  .tip.info { border-left: 2px solid var(--tip); color: var(--tip); }
-
-  /* Edit mode bar */
-  .edit-bar {
-    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 30px; padding: 8px 16px;
-    display: flex; align-items: center; gap: 10px;
-    font-size: 12px; color: var(--text2);
-    box-shadow: 0 8px 32px rgba(0,0,0,.4);
-    z-index: 100;
-  }
-  .edit-toggle {
-    padding: 5px 14px; border-radius: 20px; border: none; cursor: pointer;
-    font-size: 12px; font-weight: 600; transition: all .15s;
-    background: var(--teal); color: #0F1117;
-  }
-  .edit-toggle.off { background: var(--border); color: var(--text2); }
-
-  .save-btn {
-    padding: 5px 14px; border-radius: 20px; border: none; cursor: pointer;
-    font-size: 12px; font-weight: 600;
-    background: var(--blue); color: white;
-    display: none;
-  }
-  .save-btn.show { display: inline-block; }
-
-  /* Saved toast */
-  .toast {
-    position: fixed; top: 20px; right: 20px;
-    background: var(--teal); color: #0F1117;
-    padding: 8px 18px; border-radius: 20px;
-    font-size: 13px; font-weight: 600;
-    opacity: 0; transform: translateY(-8px);
-    transition: all .3s; pointer-events: none;
-    z-index: 200;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-
-  @media (max-width: 480px) {
-    .hero h1 { font-size: 22px; }
-    .meal-grid { grid-template-columns: 1fr 1fr; }
-  }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{--bg:#0F1117;--bg2:#181C26;--bg3:#1E2330;--border:#2A2F3E;--text:#E8EAF0;--text2:#9AA0B4;--text3:#5C6278;--teal:#2DD4A0;--teal-d:#193D2F;--blue:#5B9EF0;--blue-d:#1A2740;--amber:#F0B429;--amber-d:#2A200A;--coral:#F06B5B;--coral-d:#2A1510;--purple:#9B8EF0;--purple-d:#1E1B35;--green:#6DBF67;--green-d:#182418;--gray:#6B7280;--gray-d:#1A1D22}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+.hero{padding:36px 20px 24px;max-width:740px;margin:0 auto}
+.hero h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.hero p{font-size:13px;color:var(--text2);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:12px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--text2);background:var(--bg2)}
+.chip.blue{border-color:var(--blue);color:var(--blue);background:var(--blue-d)}
+.chip.amber{border-color:var(--amber);color:var(--amber);background:var(--amber-d)}
+.days{max-width:740px;margin:0 auto;padding:0 20px;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;user-select:none}
+.head:hover{background:var(--bg3)}
+.dnum{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.dmeta{flex:1}
+.dmeta h3{font-size:15px;font-weight:600}
+.dmeta p{font-size:12px;color:var(--text2);margin-top:2px}
+.chev{font-size:11px;color:var(--text3);transition:transform .2s}
+.card.open .chev{transform:rotate(180deg)}
+.body{display:none;border-top:1px solid var(--border);padding:16px}
+.card.open .body{display:block}
+.stay{display:flex;gap:10px;padding:10px 12px;border-radius:10px;margin-bottom:14px;border:1px solid var(--border)}
+.stay-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.stay-name{font-size:13px;font-weight:600;color:var(--text)}
+.stay-desc{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4}
+.sec{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin-bottom:14px}
+.mc{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:8px 11px}
+.ml{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:2px}
+.mn{font-size:13px;font-weight:600}
+.md{font-size:11px;color:var(--text2);margin-top:1px;line-height:1.4}
+.tl{display:flex;flex-direction:column}
+.ti{display:flex;gap:10px}
+.tll{display:flex;flex-direction:column;align-items:center;width:42px;flex-shrink:0}
+.tt{font-size:10px;color:var(--text3);font-weight:500;text-align:center;padding-top:2px;line-height:1.2}
+.td{width:7px;height:7px;border-radius:50%;margin:4px 0;flex-shrink:0}
+.tln{flex:1;width:1px;background:var(--border)}
+.tr{flex:1;padding-bottom:13px}
+.tp{font-size:13px;font-weight:600;line-height:1.4}
+.tdc{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.5}
+.tips{margin-top:5px;display:flex;flex-direction:column;gap:3px}
+.tip{font-size:11px;padding:3px 9px;border-radius:6px;background:var(--bg3);line-height:1.4}
+.tip.food{border-left:2px solid var(--amber);color:var(--amber)}
+.tip.warn{border-left:2px solid var(--coral);color:#f09080}
+.tip.info{border-left:2px solid var(--teal);color:var(--teal)}
+.tip.special{border-left:2px solid var(--purple);color:var(--purple)}
+.event-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:6px}
+.edit-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:30px;padding:8px 16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2);box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:100}
+.ebtn{padding:5px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:var(--teal);color:#0F1117}
+.ebtn.off{background:var(--border);color:var(--text2)}
+.sbtn{padding:5px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:var(--blue);color:white;display:none}
+.sbtn.show{display:inline-block}
+.toast{position:fixed;top:20px;right:20px;background:var(--teal);color:#0F1117;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transform:translateY(-8px);transition:all .3s;pointer-events:none;z-index:200}
+.toast.show{opacity:1;transform:translateY(0)}
+[contenteditable]:hover{background:rgba(255,255,255,.04);border-radius:4px}
+[contenteditable]:focus{background:rgba(255,255,255,.07);border-radius:4px;outline:none;box-shadow:0 0 0 1px rgba(91,158,240,.4)}
+@media(max-width:480px){.hero h1{font-size:20px}.mg{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-
 <div class="hero">
   <h1>Taiwan 2026 — 8 Adults + 1 Baby</h1>
-  <p>19–28 Jun 2026 · 10 hari · Itinerary lengkap + rekomendasi terbaik</p>
-  <div class="flight-chips">
-    <span class="chip blue">✈ 19 Jun: CGK 01:30 → TPE 08:05 (China Airlines)</span>
-    <span class="chip amber">✈ 28 Jun: TPE 09:00 → CGK (EVA Air)</span>
+  <p>19–28 Jun 2026 · 10 hari · SML & Alishan dulu → Taipei</p>
+  <div class="chips">
+    <span class="chip blue">✈ 19 Jun CGK 01:30 → TPE 08:05 (China Airlines)</span>
+    <span class="chip amber">✈ 28 Jun TPE 09:05 → CGK 13:35 (EVA Air)</span>
+    <span class="chip" style="border-color:#9B8EF0;color:#9B8EF0;background:#1E1B35">🐉 19 Jun: Dragon Boat Race Lugang 13:00–21:00</span>
+    <span class="chip" style="border-color:#9B8EF0;color:#9B8EF0;background:#1E1B35">🎆 20 Jun: Kembang Api Dongshi 20:00</span>
   </div>
 </div>
-
 <div class="days" id="days"></div>
 <div class="toast" id="toast">Tersimpan ✓</div>
-
 <div class="edit-bar">
-  <span id="edit-status">Mode lihat</span>
-  <button class="edit-toggle off" id="editBtn" onclick="toggleEdit()">✏️ Edit</button>
-  <button class="save-btn" id="saveBtn" onclick="saveData()">💾 Simpan</button>
+  <span id="est">Mode lihat</span>
+  <button class="ebtn off" id="eBtn" onclick="toggleEdit()">✏️ Edit</button>
+  <button class="sbtn" id="sBtn" onclick="saveData()">💾 Simpan</button>
 </div>
-
 <script>
-const COLORS = {
-  blue:   {dot:'#5B9EF0', bg:'rgba(91,158,240,.15)', text:'#5B9EF0'},
-  teal:   {dot:'#2DD4A0', bg:'rgba(45,212,160,.15)', text:'#2DD4A0'},
-  purple: {dot:'#9B8EF0', bg:'rgba(155,142,240,.15)', text:'#9B8EF0'},
-  amber:  {dot:'#F0B429', bg:'rgba(240,180,41,.15)',  text:'#F0B429'},
-  green:  {dot:'#6DBF67', bg:'rgba(109,191,103,.15)', text:'#6DBF67'},
-  gray:   {dot:'#6B7280', bg:'rgba(107,114,128,.15)', text:'#6B7280'},
+const COL={
+  teal:{c:'#2DD4A0',bg:'rgba(45,212,160,.15)'},
+  blue:{c:'#5B9EF0',bg:'rgba(91,158,240,.15)'},
+  amber:{c:'#F0B429',bg:'rgba(240,180,41,.15)'},
+  green:{c:'#6DBF67',bg:'rgba(109,191,103,.15)'},
+  purple:{c:'#9B8EF0',bg:'rgba(155,142,240,.15)'},
+  gray:{c:'#6B7280',bg:'rgba(107,114,128,.15)'},
+  coral:{c:'#F06B5B',bg:'rgba(240,107,91,.15)'},
 };
+let editMode=false;
+const DAYS=[
+{n:1,date:'19 Jun (Jum)',label:'TPE → Lugang 🐉 → Sun Moon Lake',c:'teal',
+stay:{i:'🏡',n:'心月湖畔雅房包棟民宿',d:'410 中山路, 555 Shui-wei, Sun Moon Lake · Malam ke-1 · Sewa seluruh penginapan'},
+meals:[
+  ['Makan Siang','濠誠活海產京川菜麵食餐廳','Lugang, Guangfu Road 27 · Seafood + Beijing/Sichuan cuisine · Reservasi dulu!'],
+  ['Snack Festival','Zongzi di Lugang','Booth festival sepanjang Fulu River'],
+  ['Makan Malam','Ita Thao Night Market','Makanan khas suku Thao pinggir danau SML'],
+],
+tl:[
+  {t:'08:05',p:'Tiba TPE — langsung gas ke selatan!',d:'Tidak menginap di Taipei. Ambil bagasi, beli EasyCard, naik HSR dari Taoyuan.',tips:[
+    {t:'Bagasi besar bisa dikirim via takkyubin ke Tsun-Huang Hotel Chiayi — NT$200/koper. Sangat dianjurkan!',c:'warn'},
+    {t:'Naik HSR dari Taoyuan Station (lebih dekat dari bandara)',c:'info'},
+  ]},
+  {t:'09:30',p:'HSR Taoyuan → Changhua',d:'Durasi ~1 jam. Lanjut taksi ke Lugang ~20 menit (NT$300–400).',tips:[]},
+  {t:'11:00',p:'Lugang (鹿港) — Kota Bersejarah Changhua',d:'Gang sempit bergaya Qing, kuil tua, kerajinan tangan. Sangat atmosferik!',tips:[
+    {t:'Longshan Temple Lugang — upacara Welcoming the Dragon King, sudah berlangsung sejak 1978!',c:'info'},
+    {t:'Jajanan khas Lugang: oyster vermicelli, phoenix eye pastry (鳳眼糕), ox tongue cake (牛舌餅)',c:'food'},
+  ]},
+  {t:'12:00',p:'Makan Siang — 濠誠活海產京川菜麵食餐廳',d:'Restoran legendaris Lugang di Guangfu Road 27. Menu 100+ pilihan, seafood segar, harga terjangkau.',tips:[
+    {t:'Wajib coba: sakura shrimp fried rice, bamboo shoots cake, sesame pancake (蔥花油餅)',c:'food'},
+    {t:'Sangat ramai terutama weekend — RESERVASI dulu! Tel: 04-776-6558',c:'warn'},
+    {t:'Cocok untuk rombongan besar — ada paket meja keluarga',c:'info'},
+  ]},
+  {t:'13:00',p:'🐉 Dragon Boat Race Lugang — MULAI!',d:'Lomba perahu naga internasional di Fulu River (福鹿溪水道). Berlangsung 13:00–21:00 setiap hari 19–21 Jun.',tips:[
+    {t:'Ini event TERBESAR festival bacang se-Taiwan tengah — 100+ tim internasional!',c:'special'},
+    {t:'Zongzi dijual di booth sepanjang sungai — versi utara (gurih) vs selatan (lebih ringan)',c:'food'},
+    {t:'Malam: light & shadow art projection di Lukang Assembly Hall — sangat indah!',c:'special'},
+    {t:'Bawa topi & sunscreen — lapangan terbuka, terik sekali siang hari',c:'warn'},
+  ]},
+  {t:'15:00',p:'Berangkat ke Sun Moon Lake',d:'Dari Lugang ke SML ~1.5–2 jam.',tips:[
+    {t:'Sewa private car langsung Lugang→SML ~NT$1.500–2.000 — paling praktis untuk 9 orang',c:'info'},
+    {t:'Atau taksi Lugang→Taichung ~NT$500, lalu bus 6670 ke SML',c:'info'},
+  ]},
+  {t:'17:00',p:'Tiba SML — check-in 心月湖畔',d:'Istirahat sebentar setelah perjalanan panjang.',tips:[]},
+  {t:'18:30',p:'Ita Thao Wharf & Night Market',d:'Dermaga dan pasar malam khas suku Thao asli Taiwan.',tips:[
+    {t:'Wild boar sausage (山豬香腸), sticky rice bamboo (竹筒飯)',c:'food'},
+    {t:'Sun Moon Lake Black Tea (日月潭紅茶) — beli sekarang untuk oleh-oleh!',c:'food'},
+  ]},
+]},
+{n:2,date:'20 Jun (Sab)',label:'Sun Moon Lake → Alishan → Chiayi 🎆',c:'amber',
+stay:{i:'🏨',n:'Tsun-Huang Hotel (尊星大飯店)',d:'No. 250 Dahua Road, West District, Chiayi ⭐⭐⭐⭐ · 2 kamar Family Room · Sarapan inklusif 21 Jun · Request dekat lift sudah dicantumkan'},
+meals:[
+  ['Sarapan','Di penginapan SML','Santai pagi terakhir di danau'],
+  ['Makan Siang','Fenqihu Lunchbox','Bento gunung era Jepang NT$100–150'],
+  ['Makan Malam','Chiayi Turkey Rice (火雞肉飯)','Nasi kalkun khas Chiayi, wajib coba! NT$40–60'],
+],
+tl:[
+  {t:'07:00',p:'Pagi santai di tepi danau',d:'Momen terakhir di SML. Suasana pagi sangat tenang.',tips:[
+    {t:'Sewa sepeda pagi: NT$200–350/jam. Track keliling danau ~15 km',c:'info'},
+  ]},
+  {t:'09:00',p:'Wenwu Temple (文武廟)',d:'Kuil megah di tepi danau. Pemandangan SML dari atas tangga dramatis. Gratis masuk.',tips:[]},
+  {t:'10:30',p:'Checkout & berangkat',d:'Bus dari Shuishe → Chiayi ~1.5 jam.',tips:[]},
+  {t:'12:00',p:'Fenqihu Old Street (奮起湖)',d:'Mampir makan siang di kota kecil 1.400 mdpl dalam perjalanan ke Alishan.',tips:[
+    {t:'Fenqihu Lunchbox (奮起湖便當) — bento kereta legendaris sejak era Jepang, NT$100–150',c:'food'},
+  ]},
+  {t:'14:00',p:'Alishan — Giant Tree Trail',d:'Hutan cypress raksasa berumur >2.000 tahun. Jalur aspal, cocok lansia & baby.',tips:[
+    {t:'Alishan No.28 Giant Tree — cypress terbesar yang masih hidup di area ini',c:'info'},
+  ]},
+  {t:'16:00',p:'Turun ke Chiayi — check-in Tsun-Huang Hotel',d:'Hotel bintang 4, 2 kamar family room. Istirahat & makan malam.',tips:[]},
+  {t:'18:30',p:'Makan malam di Chiayi',d:'',tips:[
+    {t:'Chiayi Turkey Rice (火雞肉飯) — nasi kalkun khas Chiayi, NT$40–60. Wajib!',c:'food'},
+    {t:'Wenhua Night Market Chiayi — night market lokal yang enak dan tidak terlalu ramai',c:'food'},
+  ]},
+  {t:'19:00',p:'Berangkat ke Dongshi Fishing Harbor',d:'Dari hotel ke 東石漁人碼頭 (Dongshi) ~35–40 menit naik taksi.',tips:[
+    {t:'Pesan taksi dari hotel jam 19:00 agar tiba sebelum jam 20:00 dan dapat spot yang bagus',c:'warn'},
+  ]},
+  {t:'20:00',p:'🎆 KEMBANG API DONGSHI — 端午節龍舟賽高空煙火秀',d:'Pertunjukan kembang api Dragon Boat Festival di 東石漁人碼頭. Durasi 480 detik (~8 menit)! Sangat spektakuler di atas laut.',tips:[
+    {t:'Datang minimal 30 menit sebelum untuk dapat spot terdepan di dermaga',c:'warn'},
+    {t:'Kembang api di atas laut + pantulan di air = pemandangan luar biasa indah!',c:'special'},
+    {t:'Acara digelar oleh Dongshi Township Office — gratis untuk umum',c:'info'},
+  ]},
+  {t:'21:30',p:'Kembali ke hotel Chiayi',d:'Taksi pulang ke Tsun-Huang Hotel. Istirahat — besok bangun pagi ke Alishan!',tips:[
+    {t:'Besok bangun jam 04:30 untuk sunrise Alishan — tidur lebih awal!',c:'warn'},
+  ]},
+]},
+{n:3,date:'21 Jun (Min)',label:'Alishan Pagi → Explore Chiayi → Taipei',c:'green',
+stay:{i:'🏠',n:'Penginapan Taipei — Ximending Area',d:'Belum di-book · Cari Airbnb/Agoda: Ximending/Wanhua District · 9 tamu · ada lift'},
+meals:[
+  ['Sarapan','Tsun-Huang Hotel','Sarapan inklusif — sudah termasuk booking!'],
+  ['Makan Siang','Kuliner Chiayi','Explore kota sebelum ke Taipei'],
+  ['Makan Malam','Ximending / Tonghua NM','Malam pertama di Taipei'],
+],
+tl:[
+  {t:'04:30',p:'Berangkat ke Alishan',d:'Bus pertama dari Chiayi ke Alishan ~jam 05:00.',tips:[
+    {t:'Cek jadwal bus pertama Chiayi→Alishan sehari sebelum. Tiba Alishan ~06:30',c:'warn'},
+    {t:'Suhu pagi Alishan 10–14°C — bawa jaket tebal!',c:'warn'},
+  ]},
+  {t:'06:30',p:'Alishan — Suasana Pagi & Sister Ponds',d:'Hutan cypress berkabut di pagi hari. Sister Ponds Trail (姊妹潭) — danau kembar yang indah.',tips:[
+    {t:'Teh oolong Alishan (阿里山烏龍茶) — beli untuk oleh-oleh sebelum turun, NT$150–500',c:'food'},
+  ]},
+  {t:'09:00',p:'Turun ke Chiayi & sarapan di hotel',d:'Sarapan inklusif di Tsun-Huang Hotel.',tips:[]},
+  {t:'10:30',p:'Explore Chiayi',d:'Pilihan wisata Chiayi yang cocok untuk rombongan + baby:',tips:[
+    {t:'嘉義市立美術館 (Chiayi Art Museum) — dekat stasiun, anak-anak gratis, ada area edukasi seni',c:'info'},
+    {t:'KHTOY絨毛玩偶旗艦館 — toko boneka terbesar Taiwan, GRATIS masuk, ada area main anak, ada lift!',c:'special'},
+    {t:'三隻小豬觀光農場 — farm tema babi kecil, bisa main air (buka musim panas!), cocok baby',c:'special'},
+    {t:'佐登妮絲城堡 — kastil Eropa bergaya Versailles, 40.000m², spot foto luar biasa',c:'info'},
+  ]},
+  {t:'13:00',p:'HSR Chiayi → Taipei',d:'Durasi ~1.5 jam. Tiba Taipei ~14:30.',tips:[]},
+  {t:'14:30',p:'Tiba Taipei — check-in penginapan',d:'Istirahat sejenak setelah 3 hari perjalanan.',tips:[]},
+  {t:'17:30',p:'Ximending — malam pertama di Taipei!',d:'',tips:[
+    {t:'Tonghua Night Market — lebih nyaman dan ramah baby dari Shilin',c:'food'},
+    {t:'Monga Fried Chicken, 365 Taiwan Xiao Chi — wajib malam pertama',c:'food'},
+  ]},
+]},
+{n:4,date:'22 Jun (Sen)',label:'City Tour Taipei',c:'teal',
+stay:{i:'🏠',n:'Penginapan Taipei — Ximending Area',d:'Malam ke-2'},
+meals:[
+  ['Sarapan','Yong He Soy Milk King','17 Hanzhong St — susu kedelai + you tiao'],
+  ['Makan Siang','Food Court B1 Taipei 101','~NT$150–200/orang'],
+  ['Makan Malam','Tonghua Night Market','Night market lokal favorit'],
+],
+tl:[
+  {t:'07:00',p:'Sarapan — Yong He Soy Milk King',d:'Pergi sebelum jam 09:00 agar tidak antre.',tips:[]},
+  {t:'09:00',p:'Longshan Temple (龍山寺)',d:'Kuil tertua Taipei (1738). Gratis masuk.',tips:[]},
+  {t:'10:00',p:'Bopiliao Historic Block (剝皮寮)',d:'Gang kolonial cantik di sebelah Longshan. Gratis, tidak ramai.',tips:[
+    {t:'Spot tersembunyi yang sangat worth it untuk foto!',c:'info'},
+  ]},
+  {t:'11:30',p:'Chiang Kai-shek Memorial Hall',d:'Upacara pergantian penjaga tiap jam tepat 09:00–17:00.',tips:[]},
+  {t:'13:30',p:'Taipei 101 Observatory',d:'Lantai 89, pemandangan 360°. Lift 37 detik ke atas!',tips:[
+    {t:'Beli e-ticket online — lebih murah & hemat antre. Dewasa NT$600',c:'warn'},
+    {t:'Pokemon Center Taipei — Shin Kong Mitsukoshi A11 lantai 3F, jalan kaki dari 101',c:'food'},
+  ]},
+  {t:'18:00',p:'Tonghua Night Market (通化夜市)',d:'Lebih compact, lebih enak, lebih ramah baby.',tips:[
+    {t:'Oyster vermicelli, scallion pancake, taro balls, grilled squid',c:'food'},
+  ]},
+]},
+{n:5,date:'23 Jun (Sel)',label:'North Coast — Yehliu · Jiufen · Shifen',c:'teal',
+stay:{i:'🏠',n:'Penginapan Taipei — Ximending Area',d:'Malam ke-3'},
+meals:[
+  ['Sarapan','Simpel di penginapan','Sebelum berangkat jam 08:00'],
+  ['Makan Siang','Jiufen Street Food','Taro balls, peanut roll, teh oolong'],
+  ['Makan Malam','Sekitar penginapan','Pulang ~19:00'],
+],
+tl:[
+  {t:'08:00',p:'Berangkat — Private Van seharian',d:'Sewa van 9 orang via KKday/Klook. ~NT$5.000–7.000 total.',tips:[
+    {t:'Private car jauh lebih praktis untuk rombongan 9 orang + baby + stroller',c:'warn'},
+  ]},
+  {t:'09:00',p:'Yehliu Geopark (野柳地質公園)',d:"Batu karang unik 'Queen's Head Rock'. Tiket NT$80.",tips:[
+    {t:'Juni sangat terik! Bawa topi, sunscreen SPF 50+, air minum cukup',c:'warn'},
+  ]},
+  {t:'11:30',p:'Jiufen Old Street (九份老街)',d:'Kota pegunungan bergaya Jepang, gang sempit + lampion merah.',tips:[
+    {t:"Lai A-Po Taro Balls (賴阿婆芋圓) — NT$60. Hot vs cold!",c:'food'},
+    {t:'PERHATIAN: Jiufen PENUH TANGGA — gendongan baby lebih praktis!',c:'warn'},
+    {t:'Minta driver turun di bagian ATAS → jalan ke bawah lebih mudah',c:'warn'},
+  ]},
+  {t:'14:30',p:'Shifen Sky Lantern + Waterfall (十分)',d:'Lepas sky lantern di rel kereta tua. NT$150–200/lampion.',tips:[
+    {t:'Kereta lewat tiap ~30 menit — semua mundur dari rel, sangat ikonik!',c:'warn'},
+  ]},
+  {t:'19:00',p:'Kembali ke Taipei',d:'',tips:[]},
+]},
+{n:6,date:'24 Jun (Rab)',label:'Taipei Zoo + Maokong Gondola',c:'purple',
+stay:{i:'🏠',n:'Penginapan Taipei — Ximending Area',d:'Malam ke-4'},
+meals:[
+  ['Sarapan','Di penginapan / 7-Eleven','Simpel'],
+  ['Makan Siang','Restoran dalam Zoo','Ada food court & restoran'],
+  ['Makan Malam','Tonghua Night Market',''],
+],
+tl:[
+  {t:'10:00',p:'Taipei Zoo (台北市立動物園)',d:'Giant Panda, koala, zona anak — sangat baby-friendly!',tips:[
+    {t:'Tiket NT$60 dewasa, gratis anak <6 tahun. Buka 09:00–17:00',c:'info'},
+    {t:'Giant Panda Tuanzi & Yuanzai — datang pagi agar tidak antre',c:'food'},
+  ]},
+  {t:'13:30',p:'Maokong Gondola (貓空纜車)',d:'Cable car ke bukit teh. Pemandangan kota Taipei dari atas!',tips:[
+    {t:'Tiket NT$120 sekali jalan. Ada cabin lantai kaca — seru!',c:'info'},
+  ]},
+  {t:'15:30',p:'Teh sore di Maokong',d:'Teh oolong Maokong sambil lihat pemandangan kota.',tips:[
+    {t:'Teh oolong Maokong NT$150–300/pot',c:'food'},
+  ]},
+  {t:'19:00',p:'Tonghua Night Market',d:'',tips:[]},
+]},
+{n:7,date:'25 Jun (Kam)',label:'Hari Santai Taipei',c:'green',
+stay:{i:'🏠',n:'Penginapan Taipei — Ximending Area',d:'Malam ke-5'},
+meals:[
+  ['Sarapan','Di penginapan','Santai pagi'],
+  ['Makan Siang','Bebas di Taipei','Explore kuliner lokal'],
+  ['Makan Malam','Hot Pot / Shabu-shabu','Makan besar bersama rombongan'],
+],
+tl:[
+  {t:'10:00',p:'Waktu bebas & istirahat',d:'Hari bebas setelah hari-hari yang padat.',tips:[]},
+  {t:'14:00',p:'Explore Taipei bebas',d:'Zhongshan, Xinyi, atau area belanja.',tips:[
+    {t:'Zhongshan North Rd — banyak kafe estetik & toko lokal menarik',c:'food'},
+  ]},
+  {t:'18:30',p:'Dinner bersama — Hot Pot',d:'Makan malam besar seluruh rombongan 9 orang.',tips:[
+    {t:'Banyak pilihan di Ximen: Mala hot pot, Japanese shabu-shabu, Taiwanese style',c:'food'},
+    {t:'Reservasi meja untuk 9 orang WAJIB!',c:'warn'},
+  ]},
+]},
+{n:8,date:'26 Jun (Jum)',label:'Ningxia Siang + Belanja + Raohe Malam',c:'blue',
+stay:{i:'🏠',n:'Penginapan Taipei — Ximending Area',d:'Malam ke-6'},
+meals:[
+  ['Sarapan','Di penginapan',''],
+  ['Makan Siang','Ningxia Night Market','Night market buka dari siang'],
+  ['Makan Malam','Raohe Night Market','Terenak versi warga lokal!'],
+],
+tl:[
+  {t:'10:00',p:'Ningxia Night Market (siang)',d:'Night market yang buka dari siang.',tips:[
+    {t:'Oyster omelette, pork ribs soup, taro ball — enak dan murah',c:'food'},
+  ]},
+  {t:'13:00',p:'Belanja oleh-oleh — prioritas!',d:'',tips:[
+    {t:'Pineapple Cake (鳳梨酥) — SunnyHills atau Chia Te. Wajib!',c:'food'},
+    {t:'Sun Moon Lake Black Tea & Alishan Oolong Tea',c:'food'},
+    {t:'Dried Mango khas Taiwan — jauh lebih enak dari yang di Indo',c:'food'},
+    {t:"Carrefour / Jason's Market di Xinyi untuk belanja massal lebih murah",c:'info'},
+  ]},
+  {t:'18:30',p:'Raohe Night Market (饒河街觀光夜市)',d:'Night market terenak di Taipei versi warga lokal!',tips:[
+    {t:'Fu Zhou Peppercorn Pork Bun (胡椒餅) — dibakar di tungku, WAJIB!',c:'food'},
+    {t:'Oyster noodle, herbal lamb soup',c:'food'},
+  ]},
+]},
+{n:9,date:'27 Jun (Sab)',label:'National Palace Museum + Malam Pamit',c:'purple',
+stay:{i:'🏠',n:'Penginapan Taipei — Ximending Area',d:'Malam terakhir — packing total malam ini!'},
+meals:[
+  ['Makan Siang','Silks Palace Restaurant','Dalam kompleks National Palace Museum'],
+  ['Camilan Sore',"Da'an Forest Park",'Piknik santai'],
+  ['Makan Malam','Ximending — malam pamit','Beef noodle + Snow King Ice Cream'],
+],
+tl:[
+  {t:'09:00',p:'National Palace Museum (國立故宮博物院)',d:'700.000+ artefak. Salah satu museum terbaik di dunia.',tips:[
+    {t:'Jadeite Cabbage & Meat-shaped Stone — 2 artefak paling ikonik',c:'info'},
+    {t:'Free English Guided Tour: 10:00 & 15:00. Tiket NT$350 dewasa',c:'info'},
+    {t:'Audio guide NT$150 — tersedia bahasa Indonesia!',c:'info'},
+  ]},
+  {t:'12:00',p:'Silks Palace (晶華軒)',d:'Restoran Cantonese berkelas dalam kompleks museum.',tips:[
+    {t:'Reservasi disarankan terutama weekend',c:'warn'},
+  ]},
+  {t:'16:00',p:"Da'an Forest Park (大安森林公園)",d:'Taman terbesar Taipei. Gratis. Rileks terakhir bersama baby.',tips:[]},
+  {t:'18:00',p:'Ximending — malam pamit Taiwan',d:'',tips:[
+    {t:'Niu Dian Beef Noodles — salah satu beef noodle terbaik Ximending',c:'food'},
+    {t:'Snow King Ice Cream (雪王) — 100+ rasa unik sejak 1947!',c:'food'},
+  ]},
+  {t:'21:00',p:'PACKING TOTAL — wajib selesai malam ini!',d:'',tips:[
+    {t:'Powerbank TIDAK BOLEH masuk koper tercek — wajib di tas kabin',c:'warn'},
+    {t:'Tax Refund: kumpul struk NT$2.000+ per toko. Counter di bandara sebelum imigrasi',c:'info'},
+    {t:'Pesan GrabTaxi/LINE Taxi van jam 05:30 — pesan MALAM INI!',c:'warn'},
+  ]},
+]},
+{n:10,date:'28 Jun (Min)',label:'Pulang ke Jakarta',c:'gray',
+stay:{i:'✈️',n:'EVA Air TPE → CGK',d:'Berangkat 09:05 · Tiba Jakarta 13:35'},
+meals:[
+  ['Sarapan','Di Bandara TPE','Food court & restoran tersedia'],
+  ['Makan Siang','Di pesawat','EVA Air'],
+],
+tl:[
+  {t:'04:00',p:'Bangun & final check',d:'Paspor, boarding pass, powerbank di tas kabin.',tips:[
+    {t:'Cairan >100ml tidak boleh di tas kabin',c:'warn'},
+  ]},
+  {t:'05:30',p:'Berangkat ke Bandara TPE',d:'Van besar atau 2 taksi untuk 9 orang.',tips:[
+    {t:'Sudah pesan GrabTaxi/LINE Taxi tadi malam?',c:'warn'},
+  ]},
+  {t:'06:30',p:'Tiba & check-in EVA Air',d:'Datang 2.5 jam sebelum boarding.',tips:[
+    {t:'Tax Refund counter — urus PERTAMA sebelum security checkpoint!',c:'info'},
+  ]},
+  {t:'09:05',p:'EVA Air TPE → CGK — Xie Xie Taiwan! 謝謝台灣',d:'Durasi ~4.5 jam. Tiba Jakarta ~13:35.',tips:[
+    {t:'Taiwan, kita pasti kembali lagi! 🇹🇼',c:'info'},
+  ]},
+]},
+];
 
-let editMode = false;
-
-const DATA = {
-  days: [
-    {n:1, date:'19 Jun (Jum)', label:'Tiba di Taipei + Festival Bacang', c:'blue',
-     meals:[
-       ['Makan Siang','Fuhong Beef Noodles','Dekat Ximending, ~NT$100/mangkok'],
-       ['Snack Sore','Zongzi / Bacang','Booth festival Dajia Riverside Park'],
-       ['Makan Malam','Ximending Street Food','Monga Fried Chicken + jalan-jalan'],
-     ],
-     tl:[
-       {t:'08:05',p:'Tiba Bandara Taoyuan (TPE)',d:'Imigrasi & bagasi. Beli EasyCard NT$500 untuk MRT selama 10 hari.',tips:[
-         {txt:'Sudah booking van airport? GrabTaxi/LINE Taxi van ~NT$1.500–2.000 ke kota',type:'warn'},
-         {txt:'Tidak macet arah masuk kota pagi hari — perjalanan ~45 menit',type:'info'},
-       ]},
-       {t:'10:30',p:'Check-in & istirahat',d:'Mandi, istirahat sebentar setelah penerbangan dini hari.',tips:[]},
-       {t:'12:30',p:'Makan siang',d:'Fuhong Beef Noodles — No. 14 Hanzhong St, Wanhua District.',tips:[]},
-       {t:'14:00',p:'Berangkat ke Dajia Riverside Park',d:'MRT: Ximen → Zhongxiao Fuxing → Dazhi, ~30 mnt. Jalan kaki 10 mnt ke park.',tips:[
-         {txt:'Hari ini libur nasional Taiwan (端午節). Parkir penuh — MRT jauh lebih praktis',type:'warn'},
-       ]},
-       {t:'15:00',p:'Festival Bacang + Dragon Boat Race',d:'Nonton lomba perahu naga langsung di tepi Sungai Keelung!',tips:[
-         {txt:'Zongzi dijual di booth — coba versi utara (gurih) dan selatan (lebih ringan)',type:'food'},
-         {txt:'Tradisi: berdiri telur saat tengah hari = bawa keberuntungan setahun!',type:'info'},
-         {txt:'Bawa tikar kecil untuk duduk di tepi sungai bersama rombongan',type:'warn'},
-       ]},
-       {t:'17:30',p:'Kembali ke Ximending — malam pertama',d:'',tips:[
-         {txt:'Monga Fried Chicken (蒙古炸雞) — ayam goreng gede crispy, NT$85–120',type:'food'},
-         {txt:'365 Taiwan Xiao Chi — braised pork rice NT$35',type:'food'},
-       ]},
-     ]
-    },
-    {n:2, date:'20 Jun (Sab)', label:'City Tour Taipei', c:'teal',
-     meals:[
-       ['Sarapan','Yong He Soy Milk King','17 Hanzhong St — susu kedelai + you tiao'],
-       ['Makan Siang','Food Court B1 Taipei 101','~NT$150–200/orang'],
-       ['Makan Malam','Tonghua Night Market','Night market lokal, lebih nyaman dari Shilin'],
-     ],
-     tl:[
-       {t:'07:00',p:'Sarapan — Yong He Soy Milk King',d:'Pergi sebelum jam 09:00 agar tidak antre panjang.',tips:[]},
-       {t:'09:00',p:'Longshan Temple (龍山寺)',d:'Kuil tertua Taipei (1738). Gratis, buka 06:00–22:00. Stroller bisa masuk.',tips:[]},
-       {t:'10:00',p:'Bopiliao Historic Block (剝皮寮)',d:'Gang kolonial cantik tepat di sebelah Longshan. Gratis, tidak ramai. ±30 menit.',tips:[
-         {txt:'Spot tersembunyi yang jarang masuk itinerary — sangat worth it untuk foto!',type:'info'},
-       ]},
-       {t:'11:30',p:'Chiang Kai-shek Memorial Hall',d:'Upacara pergantian penjaga tiap jam tepat 09:00–17:00. Gratis masuk.',tips:[]},
-       {t:'13:30',p:'Taipei 101 Observatory',d:'Lantai 89, pemandangan 360° kota Taipei. Lift 37 detik ke atas!',tips:[
-         {txt:'Beli e-ticket online di website resmi — lebih murah & hemat antre. Dewasa NT$600',type:'warn'},
-         {txt:'Pokemon Center Taipei — Shin Kong Mitsukoshi A11 lantai 3F, jalan kaki dari 101',type:'food'},
-       ]},
-       {t:'16:30',p:'Istirahat',d:'Baby tidur siang. Recharge sebelum malam.',tips:[]},
-       {t:'18:00',p:'Tonghua Night Market (通化夜市)',d:'Lebih compact, lebih enak, lebih ramah baby dibanding Shilin.',tips:[
-         {txt:'Oyster vermicelli, scallion pancake, taro balls, grilled squid — semua wajib coba!',type:'food'},
-       ]},
-     ]
-    },
-    {n:3, date:'21 Jun (Min)', label:'North Coast — Yehliu · Jiufen · Shifen', c:'teal',
-     meals:[
-       ['Sarapan','Simpel di penginapan / 7-Eleven','Sebelum berangkat jam 08:00'],
-       ['Makan Siang','Jiufen Street Food','Taro balls, peanut roll, teh oolong'],
-       ['Makan Malam','Sekitar penginapan','Pulang ~19:00'],
-     ],
-     tl:[
-       {t:'08:00',p:'Berangkat — Private Van seharian',d:'Sewa van 9 orang via KKday/Klook. ~NT$5.000–7.000 total.',tips:[
-         {txt:'Private car jauh lebih praktis dari bus umum untuk rombongan + baby + stroller',type:'warn'},
-       ]},
-       {t:'09:00',p:"Yehliu Geopark (野柳地質公園)",d:"Batu karang unik 'Queen's Head Rock'. Tiket NT$80.",tips:[
-         {txt:'Juni sangat terik! Bawa topi, sunscreen SPF 50+, air minum yang cukup',type:'warn'},
-       ]},
-       {t:'11:30',p:'Jiufen Old Street (九份老街)',d:'Kota pegunungan bergaya Jepang, gang sempit + lampion merah.',tips:[
-         {txt:"Lai A-Po Taro Balls (賴阿婆芋圓) — taro ball paling legendaris, NT$60",type:'food'},
-         {txt:'PERHATIAN: Jiufen PENUH TANGGA — gendongan baby jauh lebih praktis!',type:'warn'},
-         {txt:'Minta driver turun di bagian ATAS → jalan ke bawah lebih mudah',type:'warn'},
-       ]},
-       {t:'14:30',p:'Shifen Old Street + Sky Lantern (十分)',d:'Lepas sky lantern di atas rel kereta tua. Tulis harapan, nyalakan, lepas ke langit.',tips:[
-         {txt:'NT$150–200 per lampion. Merah = keberuntungan, kuning = kekayaan',type:'food'},
-         {txt:'Kereta lewat tiap ~30 menit — semua mundur dari rel, sangat ikonik!',type:'warn'},
-       ]},
-       {t:'16:00',p:'Shifen Waterfall (十分瀑布)',d:'"Niagara of Taiwan". 10 menit jalan dari Old Street.',tips:[]},
-       {t:'19:00',p:'Kembali ke Taipei',d:'',tips:[]},
-     ]
-    },
-    {n:4, date:'22 Jun (Sen)', label:'Taipei Zoo + Maokong Gondola', c:'purple',
-     meals:[
-       ['Sarapan','Di penginapan / 7-Eleven','Simpel sebelum berangkat'],
-       ['Makan Siang','Restoran dalam Taipei Zoo','Ada food court & restoran'],
-       ['Makan Malam','Tonghua Night Market','Night market lokal favorit'],
-     ],
-     tl:[
-       {t:'10:00',p:'Taipei Zoo (台北市立動物園)',d:'Zoo terlengkap Asia Timur! Giant Panda, koala, zona anak.',tips:[
-         {txt:'Tiket NT$60 dewasa, gratis anak <6 tahun. Buka 09:00–17:00',type:'info'},
-         {txt:'Giant Panda Tuanzi & Yuanzai — datang pagi agar tidak antre panjang',type:'food'},
-       ]},
-       {t:'13:30',p:'Maokong Gondola (貓空纜車)',d:'Cable car ke bukit teh Maokong. Pemandangan kota dari atas luar biasa!',tips:[
-         {txt:'Tiket NT$120 sekali jalan. Ada cabin lantai kaca — seru!',type:'info'},
-         {txt:'Senin tutup lebih awal — cek jadwal resmi sebelum berangkat',type:'warn'},
-       ]},
-       {t:'15:30',p:'Teh sore di Maokong',d:'Teh oolong sambil lihat pemandangan kota Taipei.',tips:[
-         {txt:'Teh oolong Maokong khas daerah ini, NT$150–300/pot',type:'food'},
-       ]},
-       {t:'17:00',p:'Turun gondola & kembali',d:'MRT kembali ke penginapan.',tips:[]},
-       {t:'19:00',p:'Makan malam — Tonghua Night Market',d:'',tips:[]},
-     ]
-    },
-    {n:5, date:'23 Jun (Sel)', label:'Hari Santai Taipei', c:'green',
-     meals:[
-       ['Sarapan','Di penginapan','Santai pagi'],
-       ['Makan Siang','Bebas di sekitar Taipei','Explore kuliner lokal'],
-       ['Makan Malam','Hot Pot / Shabu-shabu','Makan besar bersama rombongan'],
-     ],
-     tl:[
-       {t:'10:00',p:'Waktu bebas & istirahat',d:'Hari bebas setelah beberapa hari padat.',tips:[]},
-       {t:'14:00',p:'Explore Taipei bebas',d:'Zhongshan, Xinyi, atau area baru.',tips:[
-         {txt:'Zhongshan North Rd — banyak kafe estetik & toko lokal menarik',type:'food'},
-       ]},
-       {t:'18:30',p:'Dinner bersama — Hot Pot',d:'Makan malam besar bersama seluruh rombongan 9 orang.',tips:[
-         {txt:'Banyak pilihan di Ximen: Mala hot pot, Japanese shabu-shabu, Taiwanese style',type:'food'},
-         {txt:'Reservasi meja untuk 9 orang WAJIB — terutama malam hari',type:'warn'},
-       ]},
-       {t:'20:30',p:'Packing untuk Alishan!',d:'Suhu Alishan malam 12–16°C!',tips:[
-         {txt:'Wajib bawa: jaket tebal, kaos panjang, kaus kaki hangat untuk SEMUA termasuk baby',type:'warn'},
-         {txt:'Beli tiket HSR Taipei–Chiayi online malam ini: thsrc.com.tw',type:'warn'},
-       ]},
-     ]
-    },
-    {n:6, date:'24 Jun (Rab)', label:'Taipei → Alishan', c:'green',
-     meals:[
-       ['Sarapan','Simpel sebelum berangkat','Jam 08:00 sudah jalan'],
-       ['Makan Siang','Fenqihu Lunchbox','Bento gunung era Jepang, NT$100–150'],
-       ['Makan Malam','Di sekitar Alishan','Masakan gunung hangat'],
-     ],
-     tl:[
-       {t:'08:00',p:'HSR Taipei → Chiayi',d:'Durasi ~1 jam.',tips:[
-         {txt:'WAJIB beli tiket HSR jauh hari! thsrc.com.tw. Pilih kursi berdampingan',type:'warn'},
-         {txt:'Stasiun HSR Chiayi ≠ Chiayi Train Station. Ada shuttle bus gratis',type:'warn'},
-       ]},
-       {t:'12:00',p:'Fenqihu Old Street (奮起湖)',d:'Kota kecil di 1.400 mdpl. Makan siang + jalan-jalan.',tips:[
-         {txt:'Fenqihu Lunchbox (奮起湖便當) — bento kereta legendaris sejak era Jepang',type:'food'},
-       ]},
-       {t:'14:00',p:'Lanjut ke Alishan',d:'Bus atau kereta hutan ke area utama ~1.5 jam.',tips:[]},
-       {t:'15:30',p:'Tiba Alishan — istirahat',d:'Taruh koper, pakai jaket.',tips:[]},
-       {t:'16:30',p:'Giant Tree Trail (神木群步道)',d:'Hiking ringan di antara pohon cypress raksasa berumur ribuan tahun.',tips:[
-         {txt:'Giant Tree No.28 — cypress berumur >2.000 tahun. Trail ~1.5–2 jam',type:'info'},
-       ]},
-       {t:'18:30',p:'Sunset viewing',d:'',tips:[]},
-       {t:'21:00',p:'Istirahat — tidur lebih awal!',d:'WAJIB tidur sebelum 22:00. Besok bangun jam 04:30!',tips:[
-         {txt:'Beli air mineral & snack sekarang — toko di gunung tutup lebih awal',type:'warn'},
-       ]},
-     ]
-    },
-    {n:7, date:'25 Jun (Kam)', label:'Sunrise Alishan → Sun Moon Lake', c:'amber',
-     meals:[
-       ['Sarapan','Teh oolong Alishan pagi','Di penginapan / warung pagi'],
-       ['Makan Siang','Bawa bekal di bus','Perjalanan ~3 jam'],
-       ['Makan Malam','Ita Thao Night Market','Makanan khas suku Thao pinggir danau'],
-     ],
-     tl:[
-       {t:'04:30',p:'Bangun pagi — pakai jaket!',d:'Suhu bisa 10–14°C. Baby wajib pakai jaket + beanie.',tips:[]},
-       {t:'05:10',p:'Kereta ke Zhushan Station',d:'Alishan Forest Railway khusus sunrise. ~20 menit.',tips:[
-         {txt:'WAJIB beli tiket sehari sebelum di loket stasiun — sering habis! NT$100–150',type:'warn'},
-       ]},
-       {t:'05:45',p:'SUNRISE di Zhushan Observation Deck',d:'Matahari terbit di antara lautan awan. Salah satu sunrise terbaik di Asia!',tips:[
-         {txt:'Datang 30 menit sebelum sunrise untuk posisi terdepan',type:'info'},
-         {txt:'Xiaoliyuanshan Lookout (10 menit jalan) — lebih sepi, view panoramik',type:'info'},
-       ]},
-       {t:'07:30',p:'Sister Ponds Trail (姊妹潭步道)',d:'Hiking santai menyusuri danau kembar + Shouzhen Temple.',tips:[]},
-       {t:'09:30',p:'Sarapan & checkout',d:'',tips:[
-         {txt:'Teh oolong Alishan (阿里山烏龍茶) — beli untuk oleh-oleh, NT$150–500',type:'food'},
-       ]},
-       {t:'13:00',p:'Bus 6739 — Alishan → Sun Moon Lake',d:'Satu-satunya bus langsung! Durasi ~3 jam.',tips:[
-         {txt:'WAJIB booking via Klook atau website resmi. Bus ini sangat sering penuh!',type:'warn'},
-       ]},
-       {t:'16:00',p:'Tiba Sun Moon Lake — check-in',d:'Danau paling cantik di Taiwan.',tips:[]},
-       {t:'18:00',p:'Ita Thao Wharf & Night Market',d:'Dermaga dan pasar malam khas suku Thao.',tips:[
-         {txt:'Wild boar sausage, sticky rice bamboo, Sun Moon Lake Black Tea',type:'food'},
-       ]},
-     ]
-    },
-    {n:8, date:'26 Jun (Jum)', label:'Sun Moon Lake → Taipei', c:'blue',
-     meals:[
-       ['Sarapan','Pagi di tepi danau','Di penginapan'],
-       ['Makan Siang','Nasi Ayam Gunung','Ayam kampung khas suku aborigin'],
-       ['Makan Malam','Raohe Night Market','Night market terenak versi warga lokal!'],
-     ],
-     tl:[
-       {t:'08:00',p:'Pagi santai di tepi danau',d:'',tips:[
-         {txt:'Sewa sepeda: NT$200–350/jam. Track khusus keliling danau ~15 km',type:'info'},
-         {txt:'Sun Moon Lake Ropeway — cable car ke Formosan Aboriginal Culture Village',type:'info'},
-       ]},
-       {t:'10:00',p:'Wenwu Temple (文武廟)',d:'Kuil megah di tepi danau. Pemandangan dari atas tangga sangat dramatis.',tips:[
-         {txt:'Gratis masuk. Buka 07:00–17:00',type:'info'},
-       ]},
-       {t:'11:30',p:'Checkout & makan siang terakhir di SML',d:'',tips:[
-         {txt:'山地雞 — ayam kampung bumbu khas suku asli Taiwan, NT$200–300/piring',type:'food'},
-       ]},
-       {t:'13:00',p:'Bus ke Taichung HSR → HSR ke Taipei',d:'Tiba Taipei ~16:30.',tips:[]},
-       {t:'18:30',p:'Raohe Night Market (饒河街觀光夜市)',d:'Night market terenak di Taipei!',tips:[
-         {txt:'Fu Zhou Peppercorn Pork Bun (胡椒餅) — dibakar di tungku, WAJIB!',type:'food'},
-         {txt:'Oyster noodle, herbal lamb soup',type:'food'},
-       ]},
-     ]
-    },
-    {n:9, date:'27 Jun (Sab)', label:'Museum + Belanja Oleh-oleh', c:'purple',
-     meals:[
-       ['Makan Siang','Silks Palace Restaurant','Dalam kompleks National Palace Museum'],
-       ['Camilan Sore',"Da'an Forest Park",'Beli snack, piknik santai'],
-       ['Makan Malam','Ximending — malam pamit','Beef noodle + Snow King Ice Cream'],
-     ],
-     tl:[
-       {t:'09:00',p:'National Palace Museum (國立故宮博物院)',d:'700.000+ artefak. Salah satu museum terbaik di dunia.',tips:[
-         {txt:'Jadeite Cabbage & Meat-shaped Stone — 2 artefak paling ikonik',type:'info'},
-         {txt:'Free English Guided Tour: 10:00 & 15:00. Tiket NT$350 dewasa',type:'info'},
-         {txt:'Audio guide NT$150 — tersedia bahasa Indonesia!',type:'info'},
-       ]},
-       {t:'12:00',p:'Makan siang — Silks Palace (晶華軒)',d:'Restoran Cantonese berkelas dalam kompleks museum.',tips:[
-         {txt:'Reservasi disarankan terutama weekend',type:'warn'},
-       ]},
-       {t:'14:00',p:'Belanja oleh-oleh — prioritas!',d:'',tips:[
-         {txt:'Pineapple Cake (鳳梨酥) — SunnyHills atau Chia Te. Wajib!',type:'food'},
-         {txt:'Sun Moon Lake Black Tea & Alishan Oolong Tea',type:'food'},
-         {txt:'Dried Mango khas Taiwan',type:'food'},
-         {txt:"Carrefour / Jason's Market di Xinyi untuk belanja massal lebih murah",type:'info'},
-       ]},
-       {t:'16:00',p:"Da'an Forest Park (大安森林公園)",d:'Taman terbesar Taipei. Gratis. Rileks terakhir, ajak baby di rerumputan.',tips:[]},
-       {t:'18:00',p:'Ximending — malam pamit Taiwan',d:'',tips:[
-         {txt:'Niu Dian Beef Noodles — salah satu beef noodle terbaik di Ximending',type:'food'},
-         {txt:'Snow King Ice Cream (雪王) — buka sejak 1947, 100+ rasa!',type:'food'},
-       ]},
-       {t:'21:00',p:'PACKING TOTAL — wajib selesai malam ini!',d:'',tips:[
-         {txt:'Powerbank TIDAK BOLEH masuk koper tercek — wajib di tas kabin',type:'warn'},
-         {txt:'Tax Refund: kumpul struk NT$2.000+ per toko. Counter di bandara sebelum imigrasi',type:'info'},
-         {txt:'Pesan GrabTaxi/LINE Taxi van untuk besok jam 05:30 — pesan MALAM INI!',type:'warn'},
-       ]},
-     ]
-    },
-    {n:10, date:'28 Jun (Min)', label:'Pulang ke Jakarta', c:'gray',
-     meals:[
-       ['Sarapan','Di Bandara TPE','Food court & restoran tersedia'],
-       ['Makan Siang','Di pesawat','EVA Air'],
-     ],
-     tl:[
-       {t:'04:00',p:'Bangun & final check',d:'Paspor, boarding pass, powerbank di tas kabin.',tips:[
-         {txt:'Cairan >100ml tidak boleh di tas kabin',type:'warn'},
-       ]},
-       {t:'05:30',p:'Berangkat ke Bandara Taoyuan (TPE)',d:'Perlu van besar atau 2 taksi untuk 9 orang.',tips:[
-         {txt:'Sudah pesan GrabTaxi/LINE Taxi tadi malam? Perjalanan ~45–60 menit',type:'warn'},
-       ]},
-       {t:'06:30',p:'Tiba & check-in EVA Air',d:'Datang 2.5–3 jam sebelum boarding.',tips:[
-         {txt:'Tax Refund counter — urus PERTAMA sebelum security checkpoint!',type:'info'},
-       ]},
-       {t:'09:00',p:'EVA Air BR227 TPE → CGK — Xie Xie Taiwan! 謝謝台灣',d:'Durasi ~5 jam. Tiba Jakarta ~14:00 WIB.',tips:[
-         {txt:'Taiwan, kita pasti kembali lagi! 🇹🇼',type:'info'},
-       ]},
-     ]
-    },
-  ]
-};
-
-function loadData() {
-  try {
-    const saved = localStorage.getItem('tw2026');
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
-  return DATA;
-}
-
-function saveData() {
-  const data = collectCurrentData();
-  localStorage.setItem('tw2026', JSON.stringify(data));
-  const t = document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-function collectCurrentData() {
-  // Collect edited content from DOM
-  const days = [];
-  document.querySelectorAll('.day-card').forEach((card, i) => {
-    const orig = loadedData.days[i];
-    const meals = [];
-    card.querySelectorAll('.meal-box').forEach((mb, j) => {
-      meals.push([
-        orig.meals[j][0],
-        mb.querySelector('.meal-name').textContent,
-        mb.querySelector('.meal-desc').textContent,
-      ]);
-    });
-    const tl = [];
-    card.querySelectorAll('.tl-item').forEach((ti, j) => {
-      const tipEls = ti.querySelectorAll('.tip');
-      const tips = [];
-      tipEls.forEach((te, k) => {
-        tips.push({ txt: te.textContent, type: orig.tl[j]?.tips[k]?.type || 'info' });
-      });
-      tl.push({
-        t: orig.tl[j]?.t || '',
-        p: ti.querySelector('.tl-place').textContent,
-        d: ti.querySelector('.tl-desc')?.textContent || '',
-        tips,
-      });
-    });
-    days.push({ ...orig, meals, tl });
-  });
-  return { days };
-}
-
-let loadedData = loadData();
-
-function render(data) {
-  const container = document.getElementById('days');
-  container.innerHTML = '';
-  data.days.forEach((day, i) => {
-    const col = COLORS[day.c] || COLORS.gray;
-    const card = document.createElement('div');
-    card.className = 'day-card';
-
-    // Header
-    card.innerHTML = `
-      <div class="day-head" onclick="toggleDay(this)">
-        <div class="day-num" style="background:${col.bg};color:${col.dot}">D${day.n}</div>
-        <div class="day-meta">
-          <h3>${day.date} — <span contenteditable="false">${day.label}</span></h3>
-          <p>${day.tl[0]?.p || ''}</p>
+function render(){
+  const cont=document.getElementById('days');
+  cont.innerHTML='';
+  DAYS.forEach((d,i)=>{
+    const col=COL[d.c]||COL.gray;
+    const card=document.createElement('div');
+    card.className='card';
+    const tipHtml=(tips)=>tips.map(t=>`<div class="tip ${t.c}" contenteditable="false">${t.t}</div>`).join('');
+    const tlHtml=d.tl.map((item,idx)=>{
+      const last=idx===d.tl.length-1;
+      const dotStyle=item.t.includes('🐉')||item.t.includes('🎆')?`background:#9B8EF0`:(`background:${col.c}`);
+      return`<div class="ti">
+        <div class="tll"><div class="tt">${item.t}</div><div class="td" style="${dotStyle}"></div>${!last?'<div class="tln"></div>':''}</div>
+        <div class="tr">
+          <div class="tp" contenteditable="false">${item.p}</div>
+          ${item.d?`<div class="tdc" contenteditable="false">${item.d}</div>`:''}
+          ${item.tips.length?`<div class="tips">${tipHtml(item.tips)}</div>`:''}
         </div>
-        <span class="day-chevron">▼</span>
-      </div>
-      <div class="day-body">
-        <div class="sec-lbl">Makan hari ini</div>
-        <div class="meal-grid">${day.meals.map(m => `
-          <div class="meal-box">
-            <div class="meal-label">${m[0]}</div>
-            <div class="meal-name" contenteditable="false">${m[1]}</div>
-            <div class="meal-desc" contenteditable="false">${m[2]}</div>
-          </div>`).join('')}
-        </div>
-        <div class="sec-lbl" style="margin-top:4px">Jadwal harian</div>
-        <div class="tl">${day.tl.map((item, idx) => {
-          const isLast = idx === day.tl.length - 1;
-          const tips = item.tips.map(t => `<div class="tip ${t.type}" contenteditable="false">${t.txt}</div>`).join('');
-          return `<div class="tl-item">
-            <div class="tl-l">
-              <div class="tl-time">${item.t}</div>
-              <div class="tl-dot" style="background:${col.dot}"></div>
-              ${!isLast ? '<div class="tl-line"></div>' : ''}
-            </div>
-            <div class="tl-r">
-              <div class="tl-place" contenteditable="false">${item.p}</div>
-              ${item.d ? `<div class="tl-desc" contenteditable="false">${item.d}</div>` : ''}
-              ${tips ? `<div class="tips">${tips}</div>` : ''}
-            </div>
-          </div>`;
-        }).join('')}</div>
       </div>`;
-
-    container.appendChild(card);
+    }).join('');
+    const mealHtml=d.meals.map(m=>`<div class="mc"><div class="ml">${m[0]}</div><div class="mn" contenteditable="false">${m[1]}</div><div class="md" contenteditable="false">${m[2]}</div></div>`).join('');
+    card.innerHTML=`
+      <div class="head" onclick="toggleCard(this)">
+        <div class="dnum" style="background:${col.bg};color:${col.c}">D${d.n}</div>
+        <div class="dmeta"><h3>${d.date} — <span contenteditable="false">${d.label}</span></h3><p>${d.tl[0]?.p||''}</p></div>
+        <span class="chev">▼</span>
+      </div>
+      <div class="body">
+        <div class="stay" style="background:${col.bg};border-color:${col.c}55">
+          <div class="stay-ico">${d.stay.i}</div>
+          <div><div class="stay-name" contenteditable="false">${d.stay.n}</div><div class="stay-desc" contenteditable="false">${d.stay.d}</div></div>
+        </div>
+        <div class="sec">Makan hari ini</div>
+        <div class="mg">${mealHtml}</div>
+        <div class="sec">Jadwal harian</div>
+        <div class="tl">${tlHtml}</div>
+      </div>`;
+    cont.appendChild(card);
   });
-
-  // Open first day
-  document.querySelector('.day-card')?.classList.add('open');
+  document.querySelector('.card')?.classList.add('open');
 }
 
-function toggleDay(head) {
-  const card = head.closest('.day-card');
-  const wasOpen = card.classList.contains('open');
-  document.querySelectorAll('.day-card').forEach(c => c.classList.remove('open'));
-  if (!wasOpen) card.classList.add('open');
+function toggleCard(h){
+  const card=h.closest('.card');
+  const was=card.classList.contains('open');
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('open'));
+  if(!was)card.classList.add('open');
 }
 
-function toggleEdit() {
-  editMode = !editMode;
-  const btn = document.getElementById('editBtn');
-  const saveBtn = document.getElementById('saveBtn');
-  const status = document.getElementById('edit-status');
-
-  btn.textContent = editMode ? '👁 Lihat' : '✏️ Edit';
-  btn.className = 'edit-toggle' + (editMode ? '' : ' off');
-  saveBtn.className = 'save-btn' + (editMode ? ' show' : '');
-  status.textContent = editMode ? 'Mode edit aktif' : 'Mode lihat';
-
-  document.querySelectorAll('[contenteditable]').forEach(el => {
-    el.contentEditable = editMode ? 'true' : 'false';
+function toggleEdit(){
+  editMode=!editMode;
+  const btn=document.getElementById('eBtn');
+  const sbtn=document.getElementById('sBtn');
+  const est=document.getElementById('est');
+  btn.textContent=editMode?'👁 Lihat':'✏️ Edit';
+  btn.className='ebtn'+(editMode?'':' off');
+  sbtn.className='sbtn'+(editMode?' show':'');
+  est.textContent=editMode?'Mode edit aktif':'Mode lihat';
+  document.querySelectorAll('[contenteditable]').forEach(el=>{
+    el.contentEditable=editMode?'true':'false';
   });
 }
 
-render(loadedData);
+function saveData(){
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+render();
 </script>
 </body>
 </html>
